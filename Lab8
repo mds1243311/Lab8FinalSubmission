@@ -1,0 +1,208 @@
+import java.util.*;
+
+public class Lab8 {
+    public static class TreeNode {
+        Integer val;
+        TreeNode left, right;
+
+        public TreeNode(Integer val) {
+            this.val = val;
+            left = null;
+            right = null;
+        }
+    }
+
+    public static TreeNode root;
+
+    /**
+     * Create the root instance(tree) with given Integer array
+     *
+     * @param arr array containing the value of the nodes
+     */
+    public Lab8(Integer[] arr) {
+        this.root = createTree(arr);
+    }
+
+    /**
+     * This helper function create a binary tree with the given array
+     * By using two Queues to keep track of the nodes and its value
+     * We use level-order traversal to construct the tree -> AKA, similar to BFS (Breadth First Search)
+     *
+     * @param array array containing the value of the nodes
+     * @return binary tree
+     */
+    public static TreeNode createTree(Integer[] array) {
+        if (array == null || array.length == 0) {
+            return null;
+        }
+        Queue<TreeNode> nodes = new LinkedList<>();
+        Queue<Integer> nums = new LinkedList<>();
+        for (int i = 1; i < array.length; i++) {
+            nums.offer(array[i]);
+        }
+        TreeNode treeNode = new TreeNode(array[0]);
+        nodes.offer(treeNode);
+        while (!nums.isEmpty()) {
+            Integer leftVal = nums.isEmpty() ? null : nums.poll();
+            Integer rightVal = nums.isEmpty() ? null : nums.poll();
+            TreeNode current = nodes.poll();
+            /*Construct left child*/
+            if (leftVal != null) {
+                TreeNode left = new TreeNode(leftVal);
+                current.left = left;
+                nodes.offer(left);
+            }
+            /*Construct right child*/
+            if (rightVal != null) {
+                TreeNode right = new TreeNode(rightVal);
+                current.right = right;
+                nodes.offer(right);
+            }
+        }
+        return treeNode;
+    }
+
+    /**
+     * This helper function identify user's input to choose which traversal function
+     * is going to be used to visualize(print) the tree
+     * The additional traversal functions might just for reference
+     * if you are interested in see different traversal print output
+     *
+     * @param choice user input
+     */
+    public void traverse(String choice) {
+        switch (choice) {
+            case "preorder" -> preorderTraversalPrint(this.root);
+            case "inorder" -> postorderTraversalPrint(this.root);
+            case "postorder" -> inorderTraversalPrint(this.root);
+            case "levelorder" -> levelOrderTraversal(this.root);
+            default -> System.out.println("You can only choose: preorder, inorder, postorder, and levelorder");
+        }
+    }
+
+    public void preorderTraversalPrint(TreeNode node) {
+        if (node != null) {
+            System.out.print(node.val + " ");
+            preorderTraversalPrint(node.left);
+            preorderTraversalPrint(node.right);
+        }
+    }
+
+    public void inorderTraversalPrint(TreeNode node) {
+        if (node != null) {
+            preorderTraversalPrint(node.left);
+            System.out.print(node.val + " ");
+            preorderTraversalPrint(node.right);
+        }
+    }
+
+    public void postorderTraversalPrint(TreeNode node) {
+        if (node != null) {
+            preorderTraversalPrint(node.left);
+            preorderTraversalPrint(node.right);
+            System.out.print(node.val + " ");
+        }
+    }
+
+    public void levelOrderTraversal(TreeNode node) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            TreeNode removed = queue.poll();
+            System.out.print(removed == null ? "null " : removed.val + " ");
+            /*Enqueue children */
+            if (removed != null) {
+                if (removed.left != null || removed.right != null) {
+                    queue.add(removed.left);
+                    queue.add(removed.right);
+                }
+            }
+        }
+        System.out.println();
+    }
+
+    /**
+     * This convert function calls the class instance "root" to perform conversion
+     */
+    public void convert() {
+        convert(this.root);
+    }
+
+    /**
+     * TODO
+     *
+     * @param root TODO
+     */
+
+
+    public static void convert(TreeNode root) {
+
+        if(root==null) {
+            return;
+        }
+        PreOrder(root);
+
+    }
+
+
+//pre-order is:
+// current - left - right
+
+    private static TreeNode PreOrder (TreeNode node) {
+        if(node == null) {
+            return null;
+        }
+
+        System.out.println(node.val);
+
+        TreeNode newNode = new TreeNode(node.val);
+        TreeNode currentNode = newNode;
+
+        newNode.left = null;
+
+        if (node.left != null) {
+            newNode.right = PreOrder(node.left);
+
+            // get to end of linked
+            while (currentNode.right != null){
+                currentNode = currentNode.right;
+                currentNode.left = null;
+            }
+        }
+        if (node.right != null) {
+            currentNode.left = null;
+            currentNode.right = PreOrder(node.right);
+        }
+
+        return newNode;
+    }
+    public static void printPreOrder(TreeNode root) { PreOrder(root); }
+
+
+    public static void main(String[] args) {
+        Integer[] arr = new Integer[]{1, 2, 5, 3, 4, null, 6};
+        Lab8 tree = new Lab8(arr);
+        //Output Demonstration of different traversal
+//        System.out.print("Pre-order print: ");
+//        tree.traverse("preorder");
+//        System.out.println();
+//        System.out.print("In-order print: ");
+//        tree.traverse("inorder");
+//        System.out.println();
+//        System.out.print("Post-order print: ");
+//        tree.traverse("postorder");
+//        System.out.println();
+//        System.out.print("Level-order print: ");
+//        tree.traverse("levelorder");
+
+        System.out.print("Input tree: ");
+        tree.traverse("levelorder");
+        tree.convert();
+        System.out.println("Expected: 1 null 2 null 3 null 4 null 5 null 6");
+        System.out.print("Actual: ");
+        tree.traverse("levelorder");
+
+
+        //Test more here
+    }
+}
